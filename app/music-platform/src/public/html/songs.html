@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Song Player</title>
+</head>
+<body>
+  <audio id="audioPlayer" controls>
+    Your browser does not support the audio element.
+  </audio>
+
+  <script>
+    function fetchSong(id) {
+      const audioPlayer = document.getElementById('audioPlayer');
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', `/api/songs/${id}/stream`, true);
+      xhr.responseType = 'blob';
+
+      xhr.onload = function() {
+        const audioBlob = xhr.response;
+        const audioURL = URL.createObjectURL(audioBlob);
+        audioPlayer.src = audioURL;
+      };
+
+      xhr.onerror = function() {
+        console.error('Failed to fetch song.');
+      };
+
+      xhr.send();
+    }
+
+    // Call the fetchSong function with the song ID
+    const songId = '64902c9c895fae90b9b48ae8';
+    fetchSong(songId);
+  </script>
+</body>
+</html>
