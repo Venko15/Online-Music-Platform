@@ -12,7 +12,7 @@
     function fetchSong(id) {
       const audioPlayer = document.getElementById('audioPlayer');
       const xhr = new XMLHttpRequest();
-      xhr.open('GET', `/api/songs/${id}/stream`, true);
+      xhr.open('GET', `/api/song/${id}/stream`, true);
       xhr.responseType = 'blob';
 
       xhr.onload = function() {

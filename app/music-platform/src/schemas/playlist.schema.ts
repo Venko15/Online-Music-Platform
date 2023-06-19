@@ -1,21 +1,16 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Schema, Document, model } from 'mongoose';
 
-export type PlaylistDocument = Playlist & Document;
-
-@Schema()
-export class Playlist {
-  @Prop({ required: true })
+export interface Playlist extends Document {
+  _id: string;
   name: string;
-
-  @Prop({ required: true })
-  private: boolean;
-
-  @Prop({ type: [{ type: 'ObjectId', ref: 'Song' }] })
-  songs: string[];
-
-  @Prop({ required: true })
+  songs:string[];
   ownerId: string;
 }
 
-export const PlaylistSchema = SchemaFactory.createForClass(Playlist);
+const PlaylistSchema = new Schema<Playlist>({
+  name: { type: String, required: true },
+  songs: {type: [],required:true},
+  ownerId: { type: String }
+});
+
+export const PlaylistModel = model<Playlist>('User', PlaylistSchema);

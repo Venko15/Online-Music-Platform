@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/typeorm/entities/user.entity';
+
 import { CreateUserParams } from 'src/utils/types';
-import { Repository } from 'typeorm';
+
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { CreateUserDto } from 'src/users/dtos/CreateUser.dto';
-import * as sha256 from 'fast-sha256';
 import { TokenConfig } from 'src/configs/auth.config';
+import { InjectModel } from '@nestjs/mongoose';
+import { User } from 'src/schemas/user.schema';
+import { Model } from 'mongoose';
 @Injectable()
 export class AuthService {
   constructor( 
-    @InjectRepository(User)private userRepository: Repository<User>,
+    @InjectModel('User')private userModel: Model<User>,
     private jwtService: JwtService
     ) {}
 
@@ -24,11 +24,11 @@ export class AuthService {
   }
 
   async validateUser(name: string, password: string) {
-    const user = await this.userRepository.findOneBy({name});
+    const user = await this.userModel.findOne({name:name});
 
-    if (user && await user.comparePassword(password)) {
+    if (user && await user.password === password) {
       
-      const payload = {name: user.name, sub: user.id, products: user.productids};
+      const payload = {name: user.name, sub: user.id, playlists: user.playlists};
       const tokens = await this.tokens(user) 
 
       await this.updateToken(user.id, tokens.refresh_token)
@@ -62,15 +62,15 @@ export class AuthService {
 
   async createUser(userDetails: CreateUserParams){
 
-    if(await this.userRepository.findOneBy({name: userDetails.name}) != null){
+    if(await this.userModel.findOne({name: userDetails.name}) != null){
       return {code:403, message:"Theres already a user with this name"};
     }
 
     const salt = await bcrypt.genSalt();
     userDetails.password  = await bcrypt.hash(userDetails.password, salt);
     
-    const newUser = await this.userRepository.create({...userDetails});
-    await this.userRepository.save(newUser);
+    const newUser = await this.userModel.create({...userDetails});
+    await newUser.save();
     const tokens = await this.tokens(newUser);
   
     await this.updateToken(newUser.id, tokens.refresh_token)
@@ -82,23 +82,23 @@ export class AuthService {
   async updateToken(uid:number, token:string){
     
     const hash = await this.hashToken(token);
-    const user = await this.userRepository.findOneBy({id : uid});
+    const user = await this.userModel.findOne({id : uid});
     user.refresh_token = hash;
-    await this.userRepository.save(user);
+    await user.save();
 
   }
 
 
   async logout(uid:number){
-    const user = await this.userRepository.findOneBy({id:uid});
+    const user = await this.userModel.findOne({id:uid});
 
     user.refresh_token=null;
-    await this.userRepository.save(user);
+    await user.save();
     return {code:200};
 
   }
   async refresh(uid, token){
-      const user = await this.userRepository.findOneBy({id:uid});
+      const user = await this.userModel.findOne({id:uid});
       if(bcrypt.compare(token, user.refresh_token)){
         return {code:401};
       }
