@@ -1,25 +1,48 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Playlist,  } from 'src/schemas/playlist.schema';
-import { CreatePlaylistDto } from './dto/CreatePlaylist.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Playlist } from '../entities/playlist.entity';
+import { Song } from '../entities/song.entity';
 
 @Injectable()
 export class PlaylistsService {
 
-    constructor(@InjectModel('Playlist') private playlistModel: Model<Playlist>) {}
-    
-    async add(playlistID, songID:string){
-        const playlist = await this.playlistModel.findById(playlistID);
-        playlist.songs.push(songID)
+  constructor(
+    @InjectRepository(Playlist)
+    private readonly playlistRepository: Repository<Playlist>,
+    @InjectRepository(Song)
+    private readonly songRepository: Repository<Song>,
+  ) {}
 
+  async addSongToPlaylist(playlistId: number, songId: number): Promise<Playlist> {
+    const playlist = await this.playlistRepository.findOneBy({id:playlistId});
+    if (!playlist) {
+      throw new NotFoundException('Playlist not found');
     }
 
-
-    async findAllPlaylistsById(ownerId){
-        const playlists = await this.playlistModel.findOne({ownerId:ownerId})
-        
-        return playlists;
-
+    const song = await this.songRepository.findOneBy({id:songId});
+    if (!song) {
+      throw new NotFoundException('Song not found');
     }
+
+    playlist.songs.push(song);
+    await this.playlistRepository.save(playlist);
+
+    return playlist;
+  }
+
+  async getSongsInPlaylist(playlistId: number): Promise<Song[]> {
+    const playlist = await this.playlistRepository.findOneBy({id:playlistId});
+    if (!playlist) {
+      throw new NotFoundException('Playlist not found');
+    }
+
+    const songs = await this.songRepository
+      .createQueryBuilder('song')
+      .innerJoin('song.playlists', 'playlist')
+      .where('playlist.id = :playlistId', { playlistId })
+      .getMany();
+
+    return songs;
+  }
 }

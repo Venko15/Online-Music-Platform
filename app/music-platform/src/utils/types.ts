@@ -1,6 +1,5 @@
 export type CreateUserParams = {
     name: string
-    email:string
     password: string
 }
 
@@ -14,11 +13,11 @@ export type CreateProductParams = {
 export type JwtAtPayload = {
     sub: number
     name: string
-    products: number[]
+    playlists: number[]
 }
 export type JwtRtPayload = {
     sub: number
     name: string
-    products: number[]
+    playlists: number[]
     refresh_token:string
 }

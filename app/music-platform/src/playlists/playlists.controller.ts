@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param } from '@nestjs/common';
 import { SongService } from 'src/song/services/song.service';
 import { PlaylistsService } from './playlists.service';
 
@@ -6,8 +6,11 @@ import { PlaylistsService } from './playlists.service';
 export class PlaylistsController {
     constructor(private readonly playlistService: PlaylistsService  ){}
 
-    @Post("/addSong")
-    async addSong(@Body() b){
-        
+    @Post(':id/songs/:songId')
+    async addSongToPlaylist(
+      @Param('id') playlistId: number,
+      @Param('songId') songId: number,
+    ) {
+      return this.playlistService.addSongToPlaylist(playlistId, songId);
     }
 }

@@ -7,8 +7,9 @@ import { UsersService } from 'src/users/services/users/users.service';
 import { JwtModule } from '@nestjs/jwt/dist';
 import { StrategyJwtAT } from './strategies/jwtAt.strategy';
 import { StrategyJwtRT } from './strategies/jwtRt.strategy';
-import { User, UserModel } from 'src/schemas/user.schema';
-import { MongooseModule } from '@nestjs/mongoose';
+
+import { TypeOrmModule } from '@nestjs/typeorm/dist';
+import { User } from 'src/entities/user.entity';
 
 @Module({
   imports: [UsersModule,    
@@ -16,7 +17,7 @@ import { MongooseModule } from '@nestjs/mongoose';
     global: true,
     signOptions: { expiresIn: '5m' },
   }),
-   MongooseModule.forFeature([{name:'User', schema:UserModel.schema}]),
+  TypeOrmModule.forFeature([User]),
 ],
   controllers: [AuthController],
   providers: [AuthService, StrategyJwtAT, StrategyJwtRT],

@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { PlaylistsController } from './playlists.controller';
 import { PlaylistsService } from './playlists.service';
-import { MongooseModule } from '@nestjs/mongoose';
-import { Playlist, PlaylistModel } from 'src/schemas/playlist.schema';
+import { Playlist } from '../entities/playlist.entity';
+import { Song } from '../entities/song.entity';
 
 @Module({
-  imports:[  MongooseModule.forFeature([{name:'Playlist', schema:PlaylistModel.schema}])],
+  imports: [TypeOrmModule.forFeature([Playlist, Song])],
   controllers: [PlaylistsController],
   providers: [PlaylistsService],
 })
