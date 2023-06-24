@@ -23,11 +23,29 @@ export class SongService {
 
   async upload(body, file:Express.Multer.File){
       const newSong = new Song();
-      newSong.owner = body.id;
-      newSong.title = body.name;
+      const user = await this.userRepository.findOneBy({id:body.id})
+      newSong.owner = user;
+      console.log(body.name)
+      newSong.title = body.fileName;
       newSong.songData = Buffer.from(file.buffer);
-      newSong.duration = 0;
-      return await this.songRepository.save(newSong);
+      newSong.duration = file.size;
+
+
+      if (!user.songs) {
+        const songs = [];
+        songs.push(newSong);
+        user.songs = songs;
+      } else {
+        user.songs.push(newSong);
+      }
+      await this.userRepository.save(user);
+      await this.songRepository.save(newSong);
+      const songDto = {
+        id: newSong.id,
+        name: newSong.title
+      };
+
+      return songDto
   }
 
   

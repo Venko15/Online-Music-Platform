@@ -12,9 +12,6 @@ export class UsersService {
         ) {}
 
 
-    async getProfile(){
-        
-    }
     async getUser(id: number): Promise<User> {
         const user = await this.userRepository.findOneBy({id:id});
         if (!user) {
@@ -22,4 +19,6 @@ export class UsersService {
         }
         return user;
       }
+
+
 }

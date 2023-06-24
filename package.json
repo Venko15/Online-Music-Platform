@@ -11,6 +11,9 @@
     "app/*"
   ],
   "dependencies": {
-    "class-validator": "^0.14.0"
+    "axios": "^1.4.0",
+    "class-validator": "^0.14.0",
+    "react-router-config": "^5.1.1",
+    "react-router-dom": "^6.13.0"
   }
 }

@@ -19,6 +19,6 @@ export class User {
   @OneToMany(() => Song, song => song.owner)
   songs: Song[];
 
-  @Column()
+  @Column({nullable:true})
   refresh_token: string;
 }

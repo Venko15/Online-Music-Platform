@@ -1,3 +1,5 @@
+import { Playlist } from "src/entities/playlist.entity"
+
 export type CreateUserParams = {
     name: string
     password: string
@@ -13,11 +15,11 @@ export type CreateProductParams = {
 export type JwtAtPayload = {
     sub: number
     name: string
-    playlists: number[]
+    playlists: Playlist[]
 }
 export type JwtRtPayload = {
     sub: number
     name: string
-    playlists: number[]
+    playlists: Playlist[]
     refresh_token:string
 }

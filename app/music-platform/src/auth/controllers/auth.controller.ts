@@ -25,14 +25,14 @@ export class AuthController {
             return;
             
         }
-
+        const { tokens } = tokenJ; 
         res.cookie(process.env.COOKIE_NAME, tokenJ.tokens.access_token,{
                 httpOnly:false,
                 sameSite:'Lax',
                 expires: new Date(new Date().getTime() + 300000)//300k ms = 5min za sq, ne e ot ogromno znachenie za momenta
         })
         
-        return res.status(HttpStatus.OK).json(tokenJ.tokens)
+        return {code:200, tokens}
  
     }
 

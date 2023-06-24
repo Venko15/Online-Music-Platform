@@ -7,13 +7,24 @@ export class UsersController {
 
     constructor(private userService: UsersService ){}
     
-    @Get(':id')
-    async getUser(@Param('id') id: number) {
-      return this.userService.getUser(id);
+    @UseGuards(AuthGuard('access-jwt'))
+    @Get("profile")
+    async getProfile(@Req() req){
+
+        return await this.userService.getUser(req.user.sub)
+    }
+
+    @UseGuards(AuthGuard('access-jwt'))
+    @Get("playlists")
+    async getPlaylists(@Req() req){
+
+        return await this.userService.getUser(req.user.sub)
+    }
+
+    @UseGuards(AuthGuard('access-jwt'))
+    @Get("songs")
+    async getSongs(@Req() req){
+        
     }
     
-    //needs access guard
-    async getProfile(){
-
-    }
 }

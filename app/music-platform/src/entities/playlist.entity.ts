@@ -14,7 +14,7 @@ export class Playlist {
   @Column()
   name: string;
 
-  @ManyToMany(() => Song)
+  @ManyToMany(() => Song, song => song.playlists)
   @JoinTable()
   songs: Song[];
 

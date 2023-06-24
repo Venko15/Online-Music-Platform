@@ -1,19 +1,23 @@
-import { Controller, Post, UseGuards, Get,Body, Param, UseInterceptors, UploadedFile, Res } from '@nestjs/common';
+import { Controller, Post, UseGuards, Get,Body, Param, UseInterceptors, UploadedFile, Res, Req } from '@nestjs/common';
 import { SongService } from '../services/song.service';
 import { FileInterceptor } from '@nestjs/platform-express/multer';
 import { Response } from 'express';
+import { User } from 'src/entities/user.entity';
+import { AuthGuard } from '@nestjs/passport';
 @Controller('song')
 export class SongController {
 
   constructor(private readonly songService: SongService) {}
-  @Post('createSong')
 
+  @UseGuards(AuthGuard('access-jwt'))
+  @Post('createSong')
   @UseInterceptors(FileInterceptor('file'))
-  async createSong(@Body() b, @UploadedFile() file: Express.Multer.File) {
+  async createSong(@Req() req, @Body() b, @UploadedFile() file: Express.Multer.File) {
     try {
       if (!file) {
         throw new Error('No file provided.');
       }
+      b.id = req.user.sub
       return await this.songService.upload(b, file);
     } catch (error) {
       console.error(error);
@@ -21,12 +25,12 @@ export class SongController {
     }
 
   }
-
+  
   @Get('')
   async getAllSong(){
     return await this.songService.getAllSongs();
   }
-
+  
   @Get(':id')
   async getSongById(@Param('id') id: number) {
     const song = await this.songService.getSongById(id);
@@ -34,6 +38,7 @@ export class SongController {
     return {code:200, title:song.title, id: song.id};
   }
   
+
   @Get(':id/stream')
   async playSong(@Param('id') id: number, @Res() res: Response) {
     try {
