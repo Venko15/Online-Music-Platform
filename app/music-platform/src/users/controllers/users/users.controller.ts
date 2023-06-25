@@ -7,6 +7,9 @@ export class UsersController {
 
     constructor(private userService: UsersService ){}
     
+
+    
+
     @UseGuards(AuthGuard('access-jwt'))
     @Get("profile")
     async getProfile(@Req() req){
@@ -18,13 +21,14 @@ export class UsersController {
     @Get("playlists")
     async getPlaylists(@Req() req){
 
-        return await this.userService.getUser(req.user.sub)
+        return await this.userService.getPlaylists(req.user.sub)
     }
 
     @UseGuards(AuthGuard('access-jwt'))
     @Get("songs")
     async getSongs(@Req() req){
-        
+        console.log(req.user);
+        return await this.userService.getSongs(req.user.sub);
     }
     
 }

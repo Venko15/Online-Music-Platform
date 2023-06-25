@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { CreateUserParams } from 'src/utils/types';
 import { Repository } from 'typeorm';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from 'src/users/dtos/CreateUser.dto';
 import * as sha256 from 'fast-sha256';
@@ -22,13 +22,18 @@ export class AuthService {
     return hash
 
   }
+  async comparePassword(password1, password2): Promise<boolean> {
+    return await bcrypt.compare(password1, password2);
+  }
 
-  async validateUser(name: string, password: string) {
-    const user = await this.userRepository.findOneBy({username:name});
-
-    if (user && password===password) {
+  async validateUser(username: string, password: string) {
+    const user = await this.userRepository.findOneBy({username:username});
+    console.log(user.password);
+    console.log(password);
+    console.log(user)
+    if (user && await this.comparePassword(password, user.password)) {
       
-      const payload = {name: user.username, sub: user.id, products: user.playlists};
+      const payload = {name: user.username, sub: user.id, playlists: user.playlists, songs: user.songs};
       const tokens = await this.tokens(user) 
 
       await this.updateToken(user.id, tokens.refresh_token)
@@ -62,7 +67,8 @@ export class AuthService {
 
   async createUser(userDetails: CreateUserParams){
 
-    if(await this.userRepository.findOneBy({username: userDetails.name}) != null){
+  
+    if(await this.userRepository.findOneBy({username: userDetails.username}) != null){
       return {code:403, message:"Theres already a user with this name"};
     }
 

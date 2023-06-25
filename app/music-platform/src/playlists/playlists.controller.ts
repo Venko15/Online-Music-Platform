@@ -10,8 +10,8 @@ export class PlaylistsController {
     @UseGuards(AuthGuard('access-jwt'))
     @Post("createPlaylist")
     async createPlaylist(@Body() playlist, @Req() req) {
-      playlist.ownerId = req.user.id;
-      console.log(playlist)
+      playlist.ownerId = req.user.sub;
+      console.log(req.user.sub)
       return await this.playlistService.createPlaylist(playlist);
     }
 

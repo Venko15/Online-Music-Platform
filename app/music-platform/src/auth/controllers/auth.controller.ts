@@ -19,7 +19,7 @@ export class AuthController {
     @Post('/login')
     async login(@Body() b, @Res({passthrough:true}) res, @Req() req){
         
-        const tokenJ = await this.authService.validateUser(b['name'], b['password'])
+        const tokenJ = await this.authService.validateUser(b.username, b.password)
         if(tokenJ == null){
             res.status(HttpStatus.UNAUTHORIZED).send("Wrong login credentials");
             return;

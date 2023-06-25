@@ -26,7 +26,7 @@ export class SongService {
       const user = await this.userRepository.findOneBy({id:body.id})
       newSong.owner = user;
       console.log(body.name)
-      newSong.title = body.fileName;
+      newSong.title = body.name;
       newSong.songData = Buffer.from(file.buffer);
       newSong.duration = file.size;
 

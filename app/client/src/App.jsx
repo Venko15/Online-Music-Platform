@@ -1,11 +1,11 @@
 import React from 'react';
-import RegisterPage from './auth/registrationPage';
-import LoginPage from './auth/loginPage';
+import RegisterPage from './pages/auth/registrationPage';
+import LoginPage from './pages/auth/loginPage';
 import UserPanel from './UserPanel';
-import CreatePlaylistsPage from './create/createPlaylistPage';
-import CreateSongPage from './create/createSongPage';
-import UploadPage from './create/createSongPage';
+import CreatePlaylistsPage from './pages/creation pages/createPlaylist/createPlaylistPage';
+import UploadPage from './pages/creation pages/createSong/createSongPage';
 import SongListPage from './Home';
+import ProfilePage from './pages/display pages/profile page/profilePage';
 class App extends React.Component {
 
   renderPage() {
@@ -16,6 +16,10 @@ class App extends React.Component {
       return <RegisterPage />;
     } else if (pathname === '/login') {
       return <LoginPage />;
+
+    }  else if (pathname === '/profile') {
+      return <ProfilePage />;
+
     } else if (pathname === '/makePlaylist') {
       return <CreatePlaylistsPage />;
     } else if(pathname === '/upload'){

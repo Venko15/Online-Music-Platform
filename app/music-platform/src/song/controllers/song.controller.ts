@@ -13,6 +13,7 @@ export class SongController {
   @Post('createSong')
   @UseInterceptors(FileInterceptor('file'))
   async createSong(@Req() req, @Body() b, @UploadedFile() file: Express.Multer.File) {
+    console.log(b.name)
     try {
       if (!file) {
         throw new Error('No file provided.');

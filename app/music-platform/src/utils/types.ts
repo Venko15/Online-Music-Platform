@@ -1,7 +1,7 @@
 import { Playlist } from "src/entities/playlist.entity"
 
 export type CreateUserParams = {
-    name: string
+    username: string
     password: string
 }
 

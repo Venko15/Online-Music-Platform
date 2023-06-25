@@ -1,3 +1,4 @@
+/*
 import React from 'react';
 import axios from 'axios';
 
@@ -68,7 +69,7 @@ class UploadPage extends React.Component {
     render() {
       return (
         <div>
-          {/* Pass the handleSubmit function as onSubmit prop */}
+          {/* Pass the handleSubmit function as onSubmit prop */ /*}
           <CreateSongPage onSubmit={this.handleSubmit} />
         </div>
       );
@@ -77,3 +78,4 @@ class UploadPage extends React.Component {
   
 export default UploadPage;
 
+*/

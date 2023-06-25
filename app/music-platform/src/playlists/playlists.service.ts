@@ -17,10 +17,9 @@ export class PlaylistsService {
     private readonly userRepository: Repository<User>,
     ) {}
 
-
     async createPlaylist(body) {
       const pl = new Playlist();
-      const user = await this.userRepository.findOneBy({ id: body.ownerid });
+      const user = await this.userRepository.findOneBy({ id: body.ownerId });
       pl.owner = user;
       pl.name = body.name;
     
@@ -39,9 +38,13 @@ export class PlaylistsService {
       const playlistDto = {
         id: pl.id,
         name: pl.name,
-        songs: pl.songs
-        
+        songs: pl.songs,
+        owner: {
+          id: pl.owner.id, // Include only the necessary properties of the owner
+          username: pl.owner.username // Include only the necessary properties of the owner
+        }
       };
+      console.log(pl)
     
       return playlistDto;
     }

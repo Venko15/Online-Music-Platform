@@ -25,15 +25,13 @@ class SongListPage extends React.Component {
     }
   };
 
-  handleStream = (id) => {
+  handleStream =  (id) => {
     const audioPlayer = this.audioRef.current;
-
-    // Load and play the selected song
-    audioPlayer.src = `http://localhost:3000/api/song/${id}/stream`;
-    audioPlayer.play();
-    this.setState({ currentSong: id });
-    
-  };
+      audioPlayer.src = `http://localhost:3000/api/song/${id}/stream`
+      audioPlayer.play();
+      this.setState({ currentSong: id });
+    }
+  
 
   render() {
     const { songs } = this.state;

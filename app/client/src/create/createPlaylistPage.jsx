@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
+/*import React, { Component } from 'react';
 import axios from 'axios';
+import CreationPage from '../pages/creation pages/creationPage';
 
 class CreatePlaylistsPage extends CreationPage {
   constructor(props) {
@@ -44,7 +45,7 @@ class CreatePlaylistsPage extends CreationPage {
             <label htmlFor="playlistName">Playlist Name:</label>
             <input type="text" id="playlistName" value={playlistName} onChange={this.handlePlaylistNameChange} />
           </div>
-          {/* Add other form fields */}
+          {/* Add other form fields */ /*}
           <button type="submit">Create Playlist</button>
         </form>
       </div>
@@ -53,3 +54,4 @@ class CreatePlaylistsPage extends CreationPage {
 }
 
 export default CreatePlaylistsPage;
+*/
