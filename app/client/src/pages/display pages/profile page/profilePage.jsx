@@ -2,7 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import DisplayPage from "../displayPage"
 
-const API_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEyLCJpYXQiOjE2ODc3MzA1ODgsImV4cCI6MTY4NzczMjM4OH0.rPjgZA-24Yw0Duyoc9y9mcijkeO-Nb4T8wivnSeWlo8';
+const API_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEyLCJpYXQiOjE2ODc3ODQ2NTksImV4cCI6MTY4Nzc4NjQ1OX0.xP203-fFM0yySVZL1yefpT7vahZtUpGMD0GsHpgXiuU';
 
 class ProfilePage extends DisplayPage {
   state = {
@@ -12,6 +12,7 @@ class ProfilePage extends DisplayPage {
     currentSong: null,
     selectedPlaylistId: null,
     playlistDialogOpen: false,
+    playlistSongs: [],
   };
 
   audioRef = React.createRef();
@@ -39,7 +40,7 @@ class ProfilePage extends DisplayPage {
           },
         }),
       ]);
-
+      console.log(songsResponse.data)
       const { data: profile } = profileResponse;
       const { data: playlists } = playlistsResponse;
       const { data: songs } = songsResponse;
@@ -50,98 +51,100 @@ class ProfilePage extends DisplayPage {
     }
   };
 
-  handleStream = (id) => {
-    const audioPlayer = this.audioRef.current;
-    audioPlayer.src = `http://localhost:3000/api/song/${id}/stream`;
-    audioPlayer.play();
-    this.setState({ currentSong: id });
-  };
-
-  handleOpenPlaylistDialog = (id) => {
-    this.setState({ playlistDialogOpen: true, currentSong: id });
-  };
-
-  handleClosePlaylistDialog = () => {
-    this.setState({ playlistDialogOpen: false });
-  };
-
-  handleSelectPlaylist = (playlistId) => {
-    this.setState({ selectedPlaylistId: playlistId });
-    this.handleClosePlaylistDialog();
-    // Call the method to add the song to the playlist
-    this.handleAddToPlaylist();
-  };
-
-  handleAddToPlaylist = async () => {
-    const { currentSong, selectedPlaylistId } = this.state;
-
+  fetchPlaylistSongs = async (id) => {
     try {
-      await axios.post(`http://localhost:3000/api/playlists/${selectedPlaylistId}/songs/${currentSong}`, null, {
+      const response = await axios.get(`http://localhost:3000/api/playlists/${id}`, {
         headers: {
           Authorization: `Bearer ${API_TOKEN}`,
         },
       });
-
-      // Perform any additional logic or state updates as needed
-
-      // Example: Refresh the data after successful addition
-      await this.fetchData();
+      const playlistSongs = response.data;
+      this.setState({ playlistSongs });
     } catch (error) {
       console.error('Error:', error);
-      // Handle error scenarios
     }
   };
 
   render() {
-    const { profile, playlists, songs, currentSong, playlistDialogOpen } = this.state;
+    const {
+      profile,
+      playlists,
+      songs,
+      currentSong,
+      playlistDialogOpen,
+      selectedOption,
+      selectedPlaylistId,
+      playlistSongs,
+    } = this.state;
 
     return (
       <div>
         <h2>Profile Page</h2>
-        <h3>Playlists</h3>
-        <ul>
-          {playlists.map((playlist) => (
-            <li key={playlist.id}>{playlist.title}</li>
-          ))}
-        </ul>
 
-        <h3>Songs</h3>
-        <ul>
-          {songs.map((song) => (
-            <li key={song.id}>
-              {song.title}
-              <button onClick={() => this.handleStream(song.id)} disabled={currentSong === song.id}>
-                {currentSong === song.id ? 'Playing' : 'Play'}
-              </button>
-              <button onClick={() => this.handleOpenPlaylistDialog(song.id)}>Add to Playlist</button>
-            </li>
-          ))}
-        </ul>
+        <div>
+          <button onClick={() => this.setState({ selectedOption: 'Posted Songs' })}>
+            Posted Songs
+          </button>
+          <button onClick={() => this.setState({ selectedOption: 'Playlists Made' })}>
+            Playlists Made
+          </button>
+        </div>
 
-        <audio ref={this.audioRef} controls>
-          {songs.map((song) => (
-            <source
-              key={song.id}
-              src={song.audioUrl}
-              type="audio/mp3"
-              data-testid={`audio-source-${song.id}`}
-            />
-          ))}
-          Your browser does not support the audio element.
-        </audio>
-
-        {playlistDialogOpen && (
+        {selectedOption === 'Posted Songs' && (
           <div>
-            <h3>Choose Playlist</h3>
+            <h3>Posted Songs</h3>
             <ul>
-              {playlists.map((playlist) => (
-                <li key={playlist.id} onClick={() => this.handleSelectPlaylist(playlist.id)}>
-                  {playlist.title}
+              {songs.map((song) => (
+                <li key={song.id}>
+                  {song.title}
+                  <button onClick={() => this.handleStream(song.id)}>
+                    {currentSong === song.id ? 'Playing' : 'Play'}
+                  </button>
+                  <button onClick={() => this.handleOpenPlaylistDialog(song.id)}>Add to Playlist</button>
                 </li>
               ))}
             </ul>
           </div>
         )}
+
+        {selectedOption === 'Playlists Made' && (
+          <div>
+            <h3>Playlists Made</h3>
+            <ul>
+              {playlists.map((playlist) => (
+                <li
+                  key={playlist.id}
+                >
+                  
+                  <button onClick={() => {this.setState({ selectedPlaylistId: playlist.id });this.fetchPlaylistSongs(playlist.id);}}>
+                    {playlist.title}
+                    </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {selectedOption === 'Playlists Made' && selectedPlaylistId && (
+          <div>
+            <h3>Songs in Playlist</h3>
+            <ul>
+              {playlistSongs.map((song) => (
+                <li key={song.id}>{song.title}
+                  <button onClick={() => this.handleStream(song.id)} disabled={currentSong === song.id}>
+                    {currentSong === song.id ? 'Playing' : 'Play'}
+                </button>
+                </li>
+                
+              ))}
+
+            </ul>
+          </div>
+        )}
+
+        {super.renderAudio()}
+
+        {super.render()}
       </div>
     );
   }

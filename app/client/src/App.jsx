@@ -6,12 +6,13 @@ import CreatePlaylistsPage from './pages/creation pages/createPlaylist/createPla
 import UploadPage from './pages/creation pages/createSong/createSongPage';
 import SongListPage from './Home';
 import ProfilePage from './pages/display pages/profile page/profilePage';
+import HomePage from './pages/display pages/home page/homePage';
 class App extends React.Component {
 
   renderPage() {
     const { pathname } = window.location;
     if(pathname === '/'){
-      return <SongListPage/>
+      return <HomePage/>
     }else if (pathname === '/register') {
       return <RegisterPage />;
     } else if (pathname === '/login') {

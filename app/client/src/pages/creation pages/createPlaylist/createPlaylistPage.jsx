@@ -20,7 +20,7 @@ class CreatePlaylistsPage extends CreationPage {
         name: name,
       }, {
         headers: {
-          Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEyLCJpYXQiOjE2ODc3MjUwOTUsImV4cCI6MTY4NzcyNjg5NX0.Vs5JVwxSgjKkeR7mZVdPjhXbydMoWTNdY9EReOFagjI'
+          Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEyLCJpYXQiOjE2ODc3Nzg3ODUsImV4cCI6MTY4Nzc4MDU4NX0.ht8RHs9bLa8OrBtQKDL5AVKvNfpnvvcnV3SiOW3F65k'
       }});
 
       console.log('Playlist created', response.data);
@@ -37,7 +37,6 @@ class CreatePlaylistsPage extends CreationPage {
         <h2>Create Playlists Page</h2>
         <form onSubmit={this.handlePlaylistCreation}>
           {super.render()}
-          {/* Additional form fields and logic */}
           <button type="submit">Create Playlist</button>
         </form>
       </div>

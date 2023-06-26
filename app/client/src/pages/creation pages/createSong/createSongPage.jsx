@@ -33,7 +33,7 @@ class CreateSongPage extends CreationPage {
       const response = await axios.post('http://localhost:3000/api/song/createSong', {name:name, file:file}, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEyLCJpYXQiOjE2ODc3MjUwOTUsImV4cCI6MTY4NzcyNjg5NX0.Vs5JVwxSgjKkeR7mZVdPjhXbydMoWTNdY9EReOFagjI',
+          Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEyLCJpYXQiOjE2ODc3ODA3MTIsImV4cCI6MTY4Nzc4MjUxMn0.MfdgeXk5D3SetNSLhaFvZkCec3ibSThAHXx9vrJFRps',
         },
       });
 
@@ -51,7 +51,7 @@ class CreateSongPage extends CreationPage {
         <h2>Create Song Page</h2>
         <form onSubmit={this.handleSubmit}>
           {super.render()} {/* Render the content of CreationPage */}
-          {/* Additional form fields and logic */}
+
           <div>
             <label htmlFor="file">Song File:</label>
             <input type="file" id="file" onChange={this.handleFileChange} />

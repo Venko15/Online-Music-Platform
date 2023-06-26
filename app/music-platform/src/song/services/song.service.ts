@@ -15,31 +15,34 @@ export class SongService {
   // ...
   }
 
-  async getAllSongs(): Promise<{ id: number; title: string }[]> {
-    const songs = await this.songRepository.find({ select: ['id', 'title'] });
-    return songs.map(song => ({ id: song.id, title: song.title }));
+  async getAllSongs() {
+    const songs = await this.songRepository.find({ select: ['id', 'title', 'owner'] });
+    return songs.map(song => ({ id: song.id, title: song.title , owner:song.owner}));
   }
 
 
   async upload(body, file:Express.Multer.File){
-      const newSong = new Song();
+
       const user = await this.userRepository.findOneBy({id:body.id})
+      const newSong = new Song();
       newSong.owner = user;
-      console.log(body.name)
+
       newSong.title = body.name;
       newSong.songData = Buffer.from(file.buffer);
       newSong.duration = file.size;
 
+      const saveSong = await this.songRepository.save(newSong);
 
-      if (!user.songs) {
-        const songs = [];
-        songs.push(newSong);
-        user.songs = songs;
-      } else {
-        user.songs.push(newSong);
-      }
+      // Retrieve the user's playlists
+      const songs = await this.songRepository.find({
+        where: { owner: user }
+      });
+      
+      user.songs = songs;
+      user.songs.push(saveSong);
       await this.userRepository.save(user);
-      await this.songRepository.save(newSong);
+
+
       const songDto = {
         id: newSong.id,
         name: newSong.title
@@ -58,12 +61,16 @@ export class SongService {
   }
 
   async getSongsByOwner(ownerId:number): Promise<{id:number; title: string}[]> {
-    const user = await this.userRepository.findOneBy({id:ownerId});
-    if(!user){
+   
+    const user = await this.userRepository.findOneBy({ id: ownerId });
+    if (!user) {
       throw NotFoundException;
     }
-    const songs = await this.songRepository.findBy({owner:user})
+  
+    const songs = user.songs; // Access the songs directly from the user entity
     return songs.map(song => ({ id: song.id, title: song.title }));
   }
+
+  
 }
 

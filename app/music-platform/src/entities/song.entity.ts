@@ -1,4 +1,3 @@
-// song.entity.ts
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, ManyToMany, JoinTable } from 'typeorm';
 import { User } from './user.entity';
 import { Playlist } from './playlist.entity';
@@ -14,11 +13,11 @@ export class Song {
   @Column({nullable:true})
   title: string;
 
+  @Column('bytea')
+  songData: Buffer;
+
   @Column()
   duration: number;
-
-  @Column({ type: 'bytea' })
-  songData: Buffer;
 
   @ManyToMany(() => Playlist, playlist => playlist.songs)
   @JoinTable()

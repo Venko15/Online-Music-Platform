@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
 import { Playlist } from '../entities/playlist.entity';
 import { Song } from '../entities/song.entity';
 import { User } from 'src/entities/user.entity';
@@ -18,36 +18,44 @@ export class PlaylistsService {
     ) {}
 
     async createPlaylist(body) {
-      const pl = new Playlist();
-      const user = await this.userRepository.findOneBy({ id: body.ownerId });
-      pl.owner = user;
-      pl.name = body.name;
+      const user = await this.userRepository.findOneBy({id:body.ownerId});
+      const playlist = new Playlist();
+      playlist.name = body.name;
+      playlist.owner = user;
+      // Save the playlist entity
+      const savedPlaylist = await this.playlistRepository.save(playlist);
+  
     
-      if (!user.playlists) {
-        const playlists = [];
-        playlists.push(pl);
-        user.playlists = playlists;
-      } else {
-        user.playlists.push(pl);
-      }
+      // Retrieve the user's playlists
+      const playlists = await this.playlistRepository.find({
+        where: { owner: user },
+        relations: ['songs']
+      });
     
-      await this.userRepository.save(user);
-      await this.playlistRepository.save(pl);
+      // Update the user's playlists array
+      user.playlists = playlists;
+    
+      // Add the new playlist to the user's playlists array
+      user.playlists.push(savedPlaylist);
+    
+      // Save the user entity
+      const savedUser = await this.userRepository.save(user);
     
       // Create a DTO for playlist data without circular references
       const playlistDto = {
-        id: pl.id,
-        name: pl.name,
-        songs: pl.songs,
+        id: savedPlaylist.id,
+        name: savedPlaylist.name,
+        songs: savedPlaylist.songs,
         owner: {
-          id: pl.owner.id, // Include only the necessary properties of the owner
-          username: pl.owner.username // Include only the necessary properties of the owner
+          id: savedUser.id,
+          username: savedUser.username
         }
       };
-      console.log(pl)
     
       return playlistDto;
     }
+    
+    
     
 
     async addSongToPlaylist(playlistId: number, songId: number): Promise<Playlist> {
